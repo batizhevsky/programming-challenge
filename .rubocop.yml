@@ -3,3 +3,4 @@ AllCops:
     - '.git-hooks/**/*'
     - 'bin/*'
     - 'db/schema.rb'
+    - 'db/migrate/*'
