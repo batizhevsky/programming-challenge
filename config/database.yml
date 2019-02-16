@@ -1,0 +1,25 @@
+default: &default
+  adapter: <%= ENV['DB_ADAPTER'] %>
+  encoding: <%= ENV['DB_ENCODING'] %>
+  username: <%= ENV['DB_USERNAME'] %>
+  password: <%= ENV['DB_PASSWORD'] %>
+  database: <%= ENV['DB_DATABASE'] %>
+  host: <%= ENV['DB_HOST'] %>
+  port: <%= ENV['DB_PORT'] %>
+  pool: <%= ENV['DB_POOL'] %>
+  timeout: <%= ENV['DB_TIMEOUT'] %>
+  reconnect: <%= ENV['DB_RECONNECT'] || false %>
+
+development:
+  <<: *default
+  database: <%= ENV['DB_DATABASE'] || 'microservice_development' %>
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+  <<: *default
+  database: <%= ENV['DB_DATABASE'] || 'microservice_test' %>
+
+production:
+  <<: *default
