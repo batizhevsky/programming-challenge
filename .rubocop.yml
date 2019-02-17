@@ -1,3 +1,5 @@
+Metrics/LineLength:
+  Max: 100
 AllCops:
   Exclude:
     - '.git-hooks/**/*'

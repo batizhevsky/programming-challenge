@@ -8,12 +8,10 @@ ruby File.read('.ruby-version').match(/\d\.\d.\d/)[0]
 gem 'puma'
 gem 'rails'
 
+gem 'active_model_serializers', '~> 0.10.0'
 gem 'dotenv-rails'
 gem 'foreman'
 gem 'mysql2'
-
-# Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder'
 
 group :development, :test do
   gem 'byebug'
