@@ -10,8 +10,11 @@ module V1
 
     def create
       @task = Task.new(task_attributes)
-      @task.save
-      render json: @task, status: :created, location: v1_task_url(@task)
+      if @task.save
+        render json: @task, status: :created, location: v1_task_url(@task)
+      else
+        render json: @task, status: 422, serializer: ActiveModel::Serializer::ErrorSerializer
+      end
     end
 
     private

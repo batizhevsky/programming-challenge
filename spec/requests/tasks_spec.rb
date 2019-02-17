@@ -41,6 +41,35 @@ RSpec.describe V1::TasksController, type: :request do
         post '/v1/tasks', params: task_params
       end.to change(Task, :count)
     end
+
+    context 'invalid request' do
+      let(:task_params) do
+        {
+          data: {
+            type: 'tasks',
+            attributes: {
+              title: ''
+            }
+          }
+        }
+      end
+
+      it 'returns invalid ' do
+        post '/v1/tasks', params:  task_params
+
+        expect(response).to have_http_status(422)
+        expect(response_body['errors']).to be_present
+        error = response_body['errors'].first
+        expect(error['detail']).to eq("can't be blank")
+        expect(error.dig('source', 'pointer')).to eq('/data/attributes/title')
+      end
+
+      it 'not creates a task in database' do
+        expect do
+          post '/v1/tasks', params: task_params
+        end.to_not change(Task, :count)
+      end
+    end
   end
 
   private

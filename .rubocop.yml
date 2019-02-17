@@ -2,7 +2,7 @@ Metrics/LineLength:
   Max: 100
 Metrics/BlockLength:
   Exclude:
-    - 'spec/**/*'
+    - "**/*_spec.rb"
 AllCops:
   Exclude:
     - '.git-hooks/**/*'
