@@ -72,6 +72,32 @@ RSpec.describe V1::TasksController, type: :request do
     end
   end
 
+  describe 'GET /task/:id' do
+    context 'with an exists task' do
+      let!(:task) { FactoryBot.create(:task) }
+
+      it 'shows a task' do
+        get "/v1/tasks/#{task.id}"
+        expect(response).to have_http_status(:success)
+
+        resp_task = response_body['data']
+        expect_json_api_task(resp_task)
+        expect(resp_task['id']).to eq(task.id.to_s)
+      end
+    end
+
+    context 'when the task is not exists' do
+      it 'shows a task' do
+        get '/v1/tasks/any'
+        expect(response).to have_http_status(404)
+        expect(response_body['errors']).to contain_exactly(
+          'status' => '404',
+          'title' => 'Not Found'
+        )
+      end
+    end
+  end
+
   private
 
   def expect_json_api_task(task)
