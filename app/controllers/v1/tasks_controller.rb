@@ -31,6 +31,11 @@ module V1
       end
     end
 
+    def destroy
+      @task.delete
+      render nothing: true, status: :no_content
+    end
+
     private
 
     def task_attributes

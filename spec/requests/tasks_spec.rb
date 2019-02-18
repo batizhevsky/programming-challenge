@@ -158,6 +158,19 @@ RSpec.describe V1::TasksController, type: :request do
     end
   end
 
+  describe 'DELETE /task/:id' do
+    let!(:task) { FactoryBot.create(:task) }
+    before { delete "/v1/tasks/#{task.id}" }
+
+    it 'returns proper status code' do
+      expect(response).to have_http_status(204)
+    end
+
+    it 'deletes the record' do
+      expect(Task).to_not be_exists(task.id)
+    end
+  end
+
   private
 
   def expect_json_api_task(task)
