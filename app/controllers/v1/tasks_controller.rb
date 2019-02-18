@@ -3,6 +3,8 @@
 module V1
   # CURD controller for tasks
   class TasksController < ApplicationController
+    before_action :set_task, only: %i[show update destroy]
+
     def index
       @tasks = Task.all
       render json: @tasks
@@ -18,8 +20,15 @@ module V1
     end
 
     def show
-      @task = Task.find(params[:id])
       render json: @task
+    end
+
+    def update
+      if @task.update(task_attributes)
+        render json: @task
+      else
+        render json: @task, status: 422, serializer: ActiveModel::Serializer::ErrorSerializer
+      end
     end
 
     private
@@ -29,7 +38,11 @@ module V1
     end
 
     def task_params
-      params.require(:data).permit(:type, attributes: [:title])
+      params.require(:data).permit(:type, attributes: %i[title completed])
+    end
+
+    def set_task
+      @task = Task.find(params[:id])
     end
   end
 end

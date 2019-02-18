@@ -98,6 +98,66 @@ RSpec.describe V1::TasksController, type: :request do
     end
   end
 
+  describe 'PUT /task/:id' do
+    let!(:task) { FactoryBot.create(:task, title: 'Change me') }
+    before { put "/v1/tasks/#{task.id}", params: update_params }
+
+    context 'params with valid params' do
+      let(:update_params) do
+        {
+          data: {
+            type: 'tasks',
+            attributes: {
+              title: 'To do me!',
+              completed: true
+            }
+          }
+        }
+      end
+
+      it 'returns the updated record' do
+        expect(response).to have_http_status(200)
+
+        expect_json_api_task(response_body['data'])
+        resp_task = response_body['data']['attributes']
+        expect(resp_task['title']).to eq('To do me!')
+        expect(resp_task['completed']).to eq(true)
+      end
+
+      it 'updated the db record' do
+        expect(task.reload.title).to eq('To do me!')
+        expect(task.completed).to eq(true)
+      end
+    end
+
+    context 'params with an invalid title' do
+      let(:update_params) do
+        {
+          data: {
+            type: 'tasks',
+            attributes: {
+              title: ''
+            }
+          }
+        }
+      end
+
+      it 'returns an error' do
+        expect(response).to have_http_status(422)
+
+        expect(response_body['errors']).to be_present
+        error = response_body['errors'].first
+        expect(error['detail']).to eq("can't be blank")
+        expect(error.dig('source', 'pointer')).to eq('/data/attributes/title')
+      end
+
+      it 'not changes the db record' do
+        expect(task.reload.title).to eq('Change me')
+        expect(task.completed).to eq(false)
+      end
+    end
+  end
+
   private
 
   def expect_json_api_task(task)
