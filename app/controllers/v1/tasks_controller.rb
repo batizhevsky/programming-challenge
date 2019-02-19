@@ -6,7 +6,8 @@ module V1
     before_action :set_task, only: %i[show update destroy]
 
     def index
-      @tasks = Task.all
+      @tasks = Task.with_status(status_filter)
+
       render json: @tasks
     end
 
@@ -48,6 +49,10 @@ module V1
 
     def set_task
       @task = Task.find(params[:id])
+    end
+
+    def status_filter
+      params.dig(:filter, :status)
     end
   end
 end

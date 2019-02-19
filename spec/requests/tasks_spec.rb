@@ -4,15 +4,46 @@ require 'rails_helper'
 
 RSpec.describe V1::TasksController, type: :request do
   describe 'GET /tasks' do
-    it 'shows tasks' do
-      FactoryBot.create_list(:task, 5)
+    before do
+      FactoryBot.create_list(:task, 2, completed: false)
+      FactoryBot.create_list(:task, 3, completed: true)
+    end
 
-      get '/v1/tasks'
-      expect(response).to have_http_status(:success)
+    context 'without a filter value' do
+      it 'shows tasks' do
+        get '/v1/tasks'
+        expect(response).to have_http_status(:success)
 
-      tasks = response_body['data']
-      expect(tasks.size).to eq(5)
-      expect_json_api_task(tasks[0])
+        tasks = response_body['data']
+        expect(tasks.size).to eq(5)
+        tasks.each { |task| expect_json_api_task(task) }
+      end
+    end
+
+    context 'only active' do
+      it 'shows tasks' do
+        get '/v1/tasks?filter[status]=active'
+        expect(response).to have_http_status(:success)
+
+        tasks = response_body['data']
+        expect(tasks.size).to eq(2)
+        expect(tasks).to be_all do |task|
+          task['attributes']['completed'] == false
+        end
+      end
+    end
+
+    context 'only completed' do
+      it 'shows tasks' do
+        get '/v1/tasks?filter[status]=completed'
+        expect(response).to have_http_status(:success)
+
+        tasks = response_body['data']
+        expect(tasks.size).to eq(3)
+        expect(tasks).to be_all do |task|
+          task['attributes']['completed'] == true
+        end
+      end
     end
   end
 
